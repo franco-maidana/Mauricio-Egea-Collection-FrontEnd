@@ -1,35 +1,35 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+// src/App.jsx
+import Header from "./components/Header/Header";
+import { Routes, Route, useLocation } from "react-router-dom";
+import Inicio from "./pages/Inicio";
+import InicioSession from "./perfil/InicioSession";
+import AcercaDe from "./pages/AcercaDe";
+import LoginModal from "./components/LoginModal/LoginModal"; // 👈 nuevo
 
-function App() {
-  const [count, setCount] = useState(0)
+export default function App() {
+  const location = useLocation()
+  const state = location.state
+  const backgroundLocation = state && state.backgroundLocation
 
   return (
     <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.jsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
-}
+      <Header />
+      <main style={{ paddingTop: 'var(--header-height)' }}>
+        {/* Rutas “de fondo” */}
+        <Routes location={backgroundLocation || location}>
+          <Route path="/" element={<Inicio />} />
+          <Route path="/nosotros" element={<AcercaDe />} />
+          {/* Si entran directo a /login (sin state), se ve la página normal */}
+          <Route path="/login" element={<InicioSession />} />
+        </Routes>
 
-export default App
+        {/* Si venimos con state.backgroundLocation, mostramos el modal */}
+        {backgroundLocation && (
+          <Routes>
+            <Route path="/login" element={<LoginModal />} />
+          </Routes>
+        )}
+      </main>
+    </>
+  );
+}

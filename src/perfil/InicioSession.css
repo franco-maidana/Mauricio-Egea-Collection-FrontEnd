@@ -1,0 +1,142 @@
+/* Contenedor general */
+.login {
+  max-width: 420px;
+  margin: 24px auto;
+  padding: 16px;
+}
+
+.login h1 {
+  margin: 0 0 12px;
+  font-size: 22px;
+  font-weight: 700;
+}
+
+/* Formulario */
+.login__form {
+  display: grid;
+  gap: 14px;
+}
+
+.login__form label {
+  display: grid;
+  gap: 6px;
+  font-weight: 600;
+  font-size: 14px;
+  color: #222;
+}
+
+.login__form input {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid #ddd;
+  border-radius: 10px;
+  font-size: 14px;
+  outline: none;
+  transition: border-color 120ms ease, box-shadow 120ms ease;
+}
+
+.login__form input:focus {
+  border-color: #111;
+  box-shadow: 0 0 0 3px rgba(17, 17, 17, 0.08);
+}
+
+/* Campo contraseña + botón mostrar/ocultar */
+.login__pwd {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  align-items: center;
+  gap: 8px;
+}
+
+.login__toggle {
+  padding: 8px 10px;
+  border: 1px solid #ddd;
+  background: #fff;
+  border-radius: 10px;
+  cursor: pointer;
+  font-size: 13px;
+  transition: background 120ms ease, border-color 120ms ease;
+}
+
+.login__toggle:hover {
+  background: #f7f7f7;
+  border-color: #ccc;
+}
+
+/* Botón principal */
+.login__actions button {
+  width: 100%;
+  padding: 12px;
+  border-radius: 12px;
+  border: 1px solid #111;
+  background: #111;
+  color: #fff;
+  font-weight: 700;
+  cursor: pointer;
+  transition: transform 120ms ease, opacity 120ms ease;
+}
+
+.login__actions button:hover { opacity: 0.94; transform: translateY(-1px); }
+.login__actions button:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
+
+/* Botón Google */
+.login__Google button {
+  width: 100%;
+  padding: 12px;
+  border-radius: 12px;
+  background: #fff;
+  border: 1px solid #dcdcdc;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  cursor: pointer;
+  font-weight: 700;
+  transition: background 120ms ease, border-color 120ms ease, transform 120ms ease;
+}
+
+.login__Google button:hover { background: #fafafa; border-color: #cfcfcf; transform: translateY(-1px); }
+.login__Google button:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
+
+.login__Google img {
+  width: 18px;
+  height: 18px;
+  display: block;
+}
+
+/* Links secundarios */
+.login__links {
+  display: flex;
+  justify-content: space-between;
+  font-size: 14px;
+  margin-top: 4px;
+}
+
+.login__links a {
+  color: #333;
+  text-decoration: none;
+}
+
+.login__links a:hover {
+  text-decoration: underline;
+}
+
+/* Mensaje de error */
+.login__error {
+  background: #ffe9e9;
+  color: #9b1515;
+  border: 1px solid #f2c0c0;
+  padding: 8px 10px;
+  border-radius: 10px;
+  font-size: 14px;
+}
+
+.login__ok {
+  background: #e7f7ec;
+  color: #0f6632;
+  border: 1px solid #bfe3cb;
+  padding: 8px 10px;
+  border-radius: 10px;
+  font-size: 14px;
+  margin-bottom: 6px;
+}
