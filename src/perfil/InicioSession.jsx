@@ -1,12 +1,13 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
-import "./InicioSession.css";
+import { useNavigate, Link } from "react-router-dom";
+import "./css/InicioSession.css";
 import { http } from "../services/http";
-import { UseAuth } from "../context/AuthContext"; // 👈 ojo la ruta y el nombre del hook
+import { UseAuth } from "../context/AuthContext";
 
 export default function InicioSession({
   onSuccessClose = false,
   closeDelayMs = 2000,
+  onSwitchMode, // 👈 importante
 }) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -15,29 +16,31 @@ export default function InicioSession({
   const [error, setError] = useState("");
   const [ok, setOk] = useState("");
   const navigate = useNavigate();
-  const { setUser } = UseAuth(); // 👈 lo usamos para guardar el usuario
+  const { setUser } = UseAuth();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError("");
     setOk("");
-    if (!email || !password) return setError("Completá email y contraseña");
+
+    if (!email || !password) {
+      setError("Completá email y contraseña");
+      return;
+    }
 
     try {
       setLoading(true);
-      const { csrfToken } = await http("/csrf-token");
       const data = await http("/auth/login", {
         method: "POST",
-        headers: { "x-csrf-token": csrfToken },
         body: { email, password },
       });
 
       setUser(data?.user || null);
-      console.log("Usuario guardado:", data?.user); // 👈 log correcto
-
       setOk(data?.message || "Inicio de sesión exitoso");
-      setError("");
-      if (onSuccessClose) setTimeout(() => navigate(-1), closeDelayMs);
+
+      if (onSuccessClose) {
+        setTimeout(() => navigate(-1), closeDelayMs);
+      }
     } catch (err) {
       setOk("");
       setError(err.message || "No se pudo iniciar sesión");
@@ -55,22 +58,9 @@ export default function InicioSession({
     <section className="login">
       <h1>Iniciar sesión</h1>
 
-      <form
-        onSubmit={handleSubmit}
-        className="login__form"
-        autoComplete="on"
-        aria-busy={loading}
-      >
-        {ok && (
-          <p className="login__ok" role="status" aria-live="polite">
-            {ok}
-          </p>
-        )}
-        {error && (
-          <p className="login__error" role="alert">
-            {error}
-          </p>
-        )}
+      <form onSubmit={handleSubmit} className="login__form" autoComplete="on" aria-busy={loading}>
+        {ok && <p className="login__ok" role="status" aria-live="polite">{ok}</p>}
+        {error && <p className="login__error" role="alert">{error}</p>}
 
         <label>
           Email
@@ -82,6 +72,7 @@ export default function InicioSession({
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             disabled={loading}
+            required
           />
         </label>
 
@@ -96,6 +87,7 @@ export default function InicioSession({
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               disabled={loading}
+              required
             />
             <button
               type="button"
@@ -122,12 +114,16 @@ export default function InicioSession({
         </div>
 
         <div className="login__links">
-          <a href="#" onClick={(e) => e.preventDefault()}>
-            ¿Olvidaste tu contraseña?
-          </a>
-          <a href="#" onClick={(e) => e.preventDefault()}>
-            Crear cuenta
-          </a>
+          <a href="#" onClick={(e) => e.preventDefault()}> ¿ Olvidaste tu contraseña ? </a>
+
+          {/* Si el modal nos dio onSwitchMode, usamos eso. Si no, linkeamos a /registro */}
+          {typeof onSwitchMode === "function" ? (
+            <button type="button" className="drawerLinkBtn" onClick={onSwitchMode}>
+              Registrarme
+            </button>
+          ) : (
+            <Link to="/registro" state={{ modal: true }}>Registrarme</Link>
+          )}
         </div>
       </form>
     </section>

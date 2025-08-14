@@ -1,3 +1,4 @@
+// src/context/AuthContext.jsx
 import { createContext, useContext, useEffect, useState } from "react";
 import { http } from "../services/http";
 
@@ -9,29 +10,36 @@ export function AuthProvider({ children }) {
 
   // Hidratar sesión al montar
   useEffect(() => {
-    (async () => {
+    let alive = true;
+
+    async function loadMe() {
       try {
-        const me = await http("/auth/me");      // debe devolver { user } o 401
-        setUser(me?.user || null);
-      } catch {
-        setUser(null);
+        // Backend debe exponer GET /auth/me -> { user } o 401
+        const me = await http("/auth/me");
+        if (!alive) return;
+        setUser(me && me.user ? me.user : null);
+      } catch (err) {
+        if (alive) setUser(null);
+        if (import.meta.env.DEV) console.debug("loadMe error:", err);
       } finally {
-        setLoading(false);
+        if (alive) setLoading(false);
       }
-    })();
+    }
+
+    loadMe();
+    return () => { alive = false; };
   }, []);
 
-  // Cerrar sesión (CSRF + POST /auth/logout)
+  // Cerrar sesión (sin CSRF)
   async function logout() {
     try {
-      const { csrfToken } = await http("/csrf-token");
-      await http("/auth/logout", {
-        method: "POST",
-        headers: { "x-csrf-token": csrfToken },
-      });
+      // Backend debe exponer POST (o GET) /auth/logout
+      await http("/auth/logout", { method: "POST" });
+    } catch (err) {
+      // Evita warnings de linter y ayuda en dev
+      if (import.meta.env.DEV) console.debug("logout request error:", err);
+    } finally {
       setUser(null);
-    } catch (e) {
-      if (import.meta.env.DEV) console.debug("Error al cerrar sesión:", e);
     }
   }
 

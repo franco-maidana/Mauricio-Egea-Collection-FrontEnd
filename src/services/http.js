@@ -1,46 +1,52 @@
-const API = import.meta.env.VITE_API_URL;
-
-function getCookie(name) {
-  return document.cookie
-    .split("; ")
-    .find(row => row.startsWith(name + "="))
-    ?.split("=")[1];
-}
+// src/services/http.js
+const API = (import.meta.env.VITE_API_URL || "").replace(/\/+$/, ""); // ej: "http://localhost:8080/api"
 
 export async function http(path, { method, body, headers, ...rest } = {}) {
   method = method || (body ? "POST" : "GET");
 
-  const extraHeaders = {
-    "Content-Type": "application/json",
-    ...(headers || {}),
-  };
+  const extraHeaders = { ...(headers || {}) };
 
-  // 👉 si hay cookie CSRF, mandarla como header
-  const unsafe = ["POST", "PUT", "PATCH", "DELETE"].includes(method.toUpperCase());
-  const csrf =
-    getCookie("XSRF-TOKEN") ||
-    getCookie("CSRF-TOKEN") ||
-    getCookie("csrfToken");
+  // No fuerces Content-Type si mandás FormData
+  const isFormData =
+    typeof FormData !== "undefined" && body instanceof FormData;
 
-  if (unsafe && csrf && !extraHeaders["X-CSRF-Token"]) {
-    extraHeaders["X-CSRF-Token"] = decodeURIComponent(csrf);
+  if (!isFormData && !extraHeaders["Content-Type"]) {
+    extraHeaders["Content-Type"] = "application/json";
+  }
+
+  // Útil para algunos backends (no molesta)
+  if (!extraHeaders["X-Requested-With"]) {
+    extraHeaders["X-Requested-With"] = "XMLHttpRequest";
   }
 
   const res = await fetch(`${API}${path}`, {
     method,
-    credentials: "include",
+    credentials: "include", // para que envíe/reciba cookies de sesión
     headers: extraHeaders,
-    body: body ? JSON.stringify(body) : undefined,
+    body: body ? (isFormData ? body : JSON.stringify(body)) : undefined,
+    cache: "no-store",
     ...rest,
   });
 
   if (!res.ok) {
     let msg = "Error en la solicitud";
     let data = null;
-    try { data = await res.json(); } catch (e) { if (import.meta.env.DEV) console.debug("Respuesta no JSON", e); }
-    msg = (data?.message || data?.error || data?.msg) || msg;
-    throw new Error(msg);
+    try {
+      data = await res.json();
+    } catch (e) {
+      if (import.meta.env.DEV) console.debug("Respuesta no JSON:", e);
+    }
+    msg = data?.message || data?.error || data?.msg || msg;
+    const err = new Error(msg);
+    err.status = res.status;
+    err.payload = data;
+    throw err;
   }
 
-  try { return await res.json(); } catch (e) { if (import.meta.env.DEV) console.debug("Sin cuerpo JSON", e); return null; }
+  try {
+    return await res.json();
+  } catch (e) {
+    if (import.meta.env.DEV) console.debug("Sin cuerpo JSON:", e);
+    return null;
+  }
 }

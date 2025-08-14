@@ -1,4 +1,6 @@
 /* src/components/LoginModal/LoginModal.css */
+
+/* Fondo del overlay */
 .drawerOverlay{
   position: fixed; inset: 0;
   background: rgba(0,0,0,.45);
@@ -6,17 +8,127 @@
   display: flex; justify-content: flex-end;
   z-index: 2000;
 }
+
+/* Panel lateral (NO se cambia el ancho original) */
 .drawerPanel{
-  width: 520px; max-width: 100%; height: 100%;
+  width: 520px;                /* ← se mantiene tu ancho */
+  max-width: 100%; height: 100%;
   background: #fff;
   box-shadow: -2px 0 12px rgba(0,0,0,.12);
   padding: 24px;
   position: relative;
   overflow-y: auto;
+  overflow-x: hidden;          /* evita scroll horizontal */
   animation: slideIn .18s ease-out;
 }
+
+/* Animación */
 @keyframes slideIn{from{transform:translateX(24px);opacity:.6}to{transform:none;opacity:1}}
+
+/* Cerrar */
 .drawerClose{
   position: absolute; top: 8px; right: 12px;
   border: 0; background: transparent; font-size: 22px; cursor: pointer;
+}
+
+/* Switch login/registro */
+.drawerSwitch{
+  text-align: center;
+  margin-top: 12px;
+  font-size: 0.95rem;
+}
+.drawerLinkBtn{
+  background: none;
+  border: 0;
+  color: #000;
+  font-weight: 700;
+  cursor: pointer;
+  padding: 0 2px;
+}
+
+/* Formularios ocupan todo el ancho, en columna */
+.drawerPanel .registro-container,
+.drawerPanel .login{
+  max-width: 100%;
+  margin: 0;
+  padding: 0;
+}
+.drawerPanel .registro-form,
+.drawerPanel .login__form{
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 12px; /* compacto en modal */
+}
+
+/* Fila (Nombre/Apellido) en columna dentro del modal */
+.drawerPanel .form-row{
+  display: flex;
+  flex-direction: column !important;
+  gap: 12px;
+}
+
+/* ================= Alturas unificadas ================= */
+
+/* Altura general MÁS BAJA para todos los inputs */
+.drawerPanel input[type="text"],
+.drawerPanel input[type="email"],
+.drawerPanel input[type="password"]{
+  height: 36px;                /* ↓ más bajo */
+  line-height: 36px;
+  padding: 0 10px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  box-sizing: border-box;
+  width: 100%;
+}
+
+/* Nombre y Apellido (primer form-row del registro) un POCO más altos */
+.drawerPanel .registro-form .form-row input[type="text"]{
+  height: 40px;                /* ↑ apenas más alto */
+  line-height: 40px;
+}
+
+/* Grupo contraseña (input + botón) alineado a la MISMA altura */
+.drawerPanel .login__pwd,
+.drawerPanel .pwd-group{
+  display: flex;
+  align-items: stretch;
+}
+.drawerPanel .login__pwd input,
+.drawerPanel .pwd-group input{
+  height: 36px;
+  line-height: 36px;
+  border-radius: 6px 0 0 6px;
+  border-right: 0;             /* sin doble borde */
+}
+.drawerPanel .login__toggle,
+.drawerPanel .pwd-group > button{
+  height: 36px;
+  line-height: 36px;
+  padding: 0 10px;
+  border-radius: 0 6px 6px 0;
+  border: 1px solid #ccc;
+  background: #f4f4f4;
+  cursor: pointer;
+}
+
+/* Botones principales full width y proporción similar a inputs altos */
+.drawerPanel .btn-submit,
+.drawerPanel .login__actions button,
+.drawerPanel .login__Google button{
+  width: 100%;
+  height: 40px;
+  border-radius: 6px;
+}
+
+/* Etiquetas y títulos compactos */
+.drawerPanel label{
+  display: block;
+  margin-bottom: 6px;
+  font-weight: 600;
+}
+.drawerPanel .registro-container h1,
+.drawerPanel .login h1{
+  margin-bottom: 12px;
 }
