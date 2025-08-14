@@ -8,7 +8,6 @@ export default function Header() {
   const navigate = useNavigate();
   const { user, logout, loading } = UseAuth();
 
-  // --- buscador
   const [openSearch, setOpenSearch] = useState(false);
   const [q, setQ] = useState("");
   const inputRef = useRef(null);
@@ -34,6 +33,7 @@ export default function Header() {
   }, [openSearch]);
 
   const toggleSearch = () => setOpenSearch((v) => !v);
+
   const submitSearch = (e) => {
     e.preventDefault();
     const term = q.trim();
@@ -42,10 +42,8 @@ export default function Header() {
     setOpenSearch(false);
   };
 
-  // --- swap de logo según scroll
   const [useAltLogo, setUseAltLogo] = useState(false);
 
-  // Pre-carga de ambos logos (para evitar parpadeo)
   useEffect(() => {
     ["/LogoTienda.png", "/LogosinME.png"].forEach((src) => {
       const img = new Image();
@@ -69,7 +67,7 @@ export default function Header() {
       }
     };
 
-    onScroll(); // estado inicial
+    onScroll();
     window.addEventListener("scroll", onScroll, { passive: true });
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
@@ -118,20 +116,18 @@ export default function Header() {
           </div>
         </div>
 
-        {/* CENTRO: swap de logos */}
+        {/* CENTRO */}
         <div className="header__center">
           <Link
             to="/inicio"
+            state={{}} // ← Esto evita que se pase state.modal
             className="brand-link"
             aria-label="Ir al inicio"
             title="Inicio"
-            onClick={(e) => {
-              // si ya estás en / o /inicio, no cambia la ruta; forzamos scroll arriba
-              if (location.pathname === "/" || location.pathname === "/inicio") {
-                e.preventDefault();
+            onClick={() => {
+              if (location.pathname === "/inicio" || location.pathname === "/") {
                 window.scrollTo({ top: 0, behavior: "smooth" });
               }
-              // además cerramos el buscador si estaba abierto
               setOpenSearch(false);
             }}
           >
@@ -150,18 +146,18 @@ export default function Header() {
           </Link>
         </div>
 
-
-
         {/* DERECHA */}
         <nav className="header__right">
           {!loading &&
             (user ? (
-              <button type="button" className="link ghost" onClick={logout}>Cerrar sesión</button>
+              <button type="button" className="link ghost" onClick={logout}>
+                Cerrar sesión
+              </button>
             ) : (
-              <Link to="/login" state={{ modal: true, backgroundLocation: location }} className="link">Iniciar sesión</Link>
+              <Link to="/login" state={{ modal: true, backgroundLocation: location }} className="link">
+                Iniciar sesión
+              </Link>
             ))}
-          <Link to="/inicio" className="link">Inicio</Link>
-          <Link to="/nosotros" className="link">Nosotros</Link>
           <Link to="/carrito" className="cart-link icon-btn" aria-label="Carrito">
             <svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true">
               <path d="M6 6h15l-1.5 9H7.5L6 6Zm0 0H4" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />

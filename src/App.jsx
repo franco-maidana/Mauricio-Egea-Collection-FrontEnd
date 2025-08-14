@@ -1,11 +1,10 @@
 import Header from "./components/Header/Header";
-import { Routes, Route, useLocation } from "react-router-dom";
+import { Routes, Route, useLocation, Navigate } from "react-router-dom";
 
 import Inicio from "./pages/Inicio";
 import AcercaDe from "./pages/AcercaDe";
 import ProductoDetalle from "./pages/ProductoDetalle";
-
-// Páginas (si querés mantenerlas como vistas de página)
+import Carrito from "./pages/Carrito";
 import Registro from "./perfil/Registro";
 
 // Modales
@@ -16,7 +15,6 @@ export default function App() {
   const location = useLocation();
   const state = location.state;
 
-  // ¿Esta navegación pidió abrir un modal?
   const isModal = state?.modal === true && !!state?.backgroundLocation;
   const backgroundLocation = isModal ? state.backgroundLocation : null;
 
@@ -24,22 +22,20 @@ export default function App() {
     <>
       <Header />
       <main style={{ paddingTop: "var(--header-height)" }}>
-        {/* 1) Rutas de fondo (páginas). 
-            Si hay modal, mostramos la location de fondo; si no, la actual. */}
         <Routes location={backgroundLocation || location}>
-          <Route path="/" element={<Inicio />} />
+          {/* ✅ Ruta principal SOLO con /inicio */}
           <Route path="/inicio" element={<Inicio />} />
-          <Route path="/nosotros" element={<AcercaDe />} />
-          <Route path="/producto/:id" element={<ProductoDetalle />} />
 
-          {/* Página de registro opcional (el login modal ya incluye registro dentro) */}
+          <Route path="/nosotros" element={<AcercaDe />} />
+          <Route path="/carrito" element={<Carrito />} />
+          <Route path="/producto/:id" element={<ProductoDetalle />} />
           <Route path="/registro" element={<Registro />} />
 
-          {/* fallback */}
-          <Route path="*" element={<Inicio />} />
+          {/* ✅ Redireccionar "/" y cualquier ruta desconocida a /inicio */}
+          <Route path="/" element={<Navigate to="/inicio" />} />
+          <Route path="*" element={<Navigate to="/inicio" />} />
         </Routes>
 
-        {/* 2) Rutas de modales: solo se montan cuando venís con state.modal */}
         {isModal && (
           <Routes>
             <Route path="/login" element={<LoginModal />} />

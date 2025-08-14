@@ -1,136 +1,257 @@
-:root { --header-height: 120px; }
+:root {
+  --header-height: 110px;
+}
 
-/* ===== CONTENEDOR BASE ===== */
-.header{
-  position: fixed; inset: 0 0 auto 0;
+.header {
+  position: fixed;
+  inset: 0 0 auto 0;
   height: var(--header-height);
   background: transparent;
+  padding-top: 30px;
+  padding-bottom: 30px;
   border-bottom: 0;
   z-index: 1000;
 }
 
-/* Grid: izquierda | centro | derecha */
-.header__container.header--grid{
-  display: grid;
-  grid-template-columns: auto 1fr auto;
+/* Layout base con Flex */
+.header__container.header--grid {
+  display: flex;
   align-items: center;
-  gap: 16px;
+  justify-content: space-between;
+  padding-inline: 24px;
+  position: relative;
 }
 
-/* Legibilidad */
-.header .label, .header .link { color: #111; }
-.header .icon-btn svg, .search-icon { filter: none; }
-
-/* ===== IZQUIERDA ===== */
-.header__left{ display: flex; align-items: center; gap: 14px; }
-.icon-btn{
-  background: none; border: 0; padding: 6px; border-radius: 8px;
-  cursor: pointer; color: #111; display: inline-flex; align-items: center;
+/* IZQUIERDA */
+.header__left {
+  display: flex;
+  align-items: center;
+  gap: 14px;
 }
-.icon-btn:hover{ background: rgba(0,0,0,.05); }
-.label{ color: #1d1d1d; font-weight: 500; }
 
-.search-inline{ display: inline-flex; align-items: center; gap: 8px; position: relative; }
-.search-icon{ width: 20px; height: 20px; display: block; }
-.search-inline:hover .search-icon{ transform: scale(1.06); filter: contrast(1.15); transition: .15s; }
+.icon-btn {
+  background: none;
+  border: 0;
+  padding: 6px;
+  border-radius: 8px;
+  cursor: pointer;
+  color: #111;
+  display: inline-flex;
+  align-items: center;
+}
 
-/* ===== CENTRO ===== */
-.header__center{ display: flex; justify-content: center !important; }
+.icon-btn:hover {
+  background: rgba(0, 0, 0, 0.05);
+}
 
-/* Contenedor del swap: le damos ALTURA explícita */
-.logoSwap{
+.label {
+  color: #1d1d1d;
+  font-weight: 500;
+}
+
+/* BUSCADOR */
+.search-inline {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  position: relative;
+}
+
+.search-icon {
+  width: 20px;
+  height: 20px;
+  display: block;
+}
+
+.search-trigger {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.search-trigger .label {
+  display: inline-block;
+  overflow: hidden;
+  transition: opacity 0.18s ease, max-width 0.28s ease;
+  max-width: 80px;
+}
+
+.search-inline.open .search-trigger .label {
+  opacity: 0;
+  max-width: 0;
+}
+
+.search-form {
+  overflow: hidden;
+  display: inline-flex;
+}
+
+.search-input {
+  border: none;
+  border-bottom: 2px solid transparent;
+  background: transparent;
+  color: #111;
+  border-radius: 0;
+  padding: 8px 0 6px 4px;
+  max-width: 0;
+  width: 0;
+  opacity: 0;
+  transform: translateX(-6px);
+  transition: max-width 0.28s ease, width 0.28s ease, opacity 0.18s ease, transform 0.28s ease, border-color 0.18s ease;
+  font-size: 14px;
+  outline: none;
+  caret-color: #000;
+}
+
+.search-inline.open .search-input {
+  max-width: min(45vw, 340px);
+  width: min(45vw, 340px);
+  opacity: 1;
+  transform: translateX(0);
+  border-bottom-color: #000;
+}
+
+.search-input::placeholder {
+  color: #777;
+}
+
+/* CENTRO (logo siempre centrado en desktop) */
+.header__center {
+  position: absolute;
+  left: 47%;
+  transform: translateX(-50%);
+  z-index: 9;
+}
+
+/* Logo Swap */
+.logoSwap {
   position: relative;
   display: inline-block;
   line-height: 0;
-  --logo-h: 100px;    /* altura del “slot” del logo en desktop */
+  --logo-h: 100px;
   height: var(--logo-h);
 }
 
-/* Ambas variantes ocupan el mismo slot */
-.logoSwap .variant{
+.logoSwap .variant {
   position: absolute;
-  left: 0; top: 0;
+  left: 0;
+  top: 0;
   height: var(--logo-h);
   width: auto;
   object-fit: contain;
-  transition: opacity .22s ease;
+  transition: opacity 0.22s ease;
   opacity: 0;
   pointer-events: none;
 }
 
-/* Estados */
-.logoSwap .is-visible{ opacity: 1; }
-.logoSwap .is-hidden { opacity: 0; }
+.logoSwap .is-visible {
+  opacity: 1;
+}
+.logoSwap .is-hidden {
+  opacity: 0;
+}
 
-.logo{ 
-  transform: translateX(-40px);
+.logo {
   margin-top: 10px;
 }
-.logo--center{ max-height: 100px !important; }
 
-/* ===== DERECHA ===== */
-.header__right{ display: flex; align-items: center; justify-self: end; gap: 18px; }
-.link{ color: #2b2b2b; text-decoration: none; font-weight: 500; }
-.link:hover{ text-decoration: underline; }
-
-/* Botón “Cerrar sesión” */
-.link.ghost{
-  appearance: none; border: 1px solid #e7c8c8; background: #fff; color: #8b1a1a;
-  padding: 6px 12px; border-radius: 9999px; cursor: pointer; line-height: 1;
-  transition: background .15s, border-color .15s, color .15s, transform .08s;
-}
-.link.ghost:hover{ background: #ffecec; border-color: #e2aaaa; color: #6d0f0f; }
-.link.ghost:active{ transform: translateY(1px); }
-
-/* Carrito */
-.cart-link{ position: relative; display: inline-flex; align-items: center; }
-.cart-count{
-  position: absolute; top: -6px; right: -8px;
-  background: #000; color: #fff; font-size: 12px; font-weight: 700;
-  border-radius: 50%; padding: 2px 6px; line-height: 1;
+.brand-link {
+  display: inline-block;
+  transition: transform 0.25s ease;
 }
 
-/* ===== Buscador expandible ===== */
-.search-trigger{ display: inline-flex; align-items: center; gap: 8px; }
-.search-trigger .label{
-  display: inline-block; overflow: hidden; transition: opacity .18s ease, max-width .28s ease; max-width: 80px;
-}
-.search-inline.open .search-trigger .label{ opacity: 0; max-width: 0; }
-
-.search-form{ overflow: hidden; display: inline-flex; }
-.search-input{
-  border: none; border-bottom: 2px solid transparent; background: transparent; color: #111;
-  border-radius: 0; padding: 8px 0 6px 4px;
-  max-width: 0; width: 0; opacity: 0; transform: translateX(-6px);
-  transition: max-width .28s ease, width .28s ease, opacity .18s ease, transform .28s ease, border-color .18s ease;
-  font-size: 14px; outline: none; caret-color: #000;
-}
-.search-inline.open .search-input{
-  max-width: min(45vw, 340px); width: min(45vw, 340px); opacity: 1; transform: translateX(0); border-bottom-color: #000;
-}
-.search-input::placeholder{ color: #777; }
-
-.brand-link { position: relative; z-index: 10; }
-
-
-/* ===== Breakpoints ===== */
-@media (max-width: 640px){
-  .logoSwap{ --logo-h: 64px; }   /* baja el alto del slot */
+/* DERECHA */
+.header__right {
+  display: flex;
+  align-items: center;
+  justify-self: end;
+  margin-right: 16px;
+  gap: 20px;
 }
 
-@media (max-width: 480px){
-  .header__container.header--grid{
-    grid-template-columns: auto 1fr;
-    align-items: center;
+.link {
+  color: #2b2b2b;
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.link:hover {
+  text-decoration: underline;
+}
+
+.link.ghost {
+  appearance: none;
+  border: 1px solid #e7c8c8;
+  background: #fff;
+  color: #8b1a1a;
+  padding: 6px 12px;
+  border-radius: 9999px;
+  cursor: pointer;
+  line-height: 1;
+  transition: background 0.15s, border-color 0.15s, color 0.15s, transform 0.08s;
+}
+
+.link.ghost:hover {
+  background: #ffecec;
+  border-color: #e2aaaa;
+  color: #6d0f0f;
+}
+
+.link.ghost:active {
+  transform: translateY(1px);
+}
+
+.cart-link {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+}
+
+.cart-count {
+  position: absolute;
+  top: -6px;
+  right: -8px;
+  background: #000;
+  color: #fff;
+  font-size: 12px;
+  font-weight: 700;
+  border-radius: 50%;
+  padding: 2px 6px;
+  line-height: 1;
+}
+
+/* ===== MOBILE ===== */
+@media (max-width: 480px) {
+  .header__container.header--grid {
+    justify-content: flex-start;
     padding-inline: 12px;
   }
-  .header__right{ display: none !important; }
-  .header__left .label{ display: none !important; }
-  .header__center{ display: flex; justify-content: center; }
 
-  .logoSwap{ --logo-h: 80px; }   /* altura del slot en mobile */
+  .header__right {
+    display: none !important;
+  }
 
-  /* corrimiento del logo para compensar iconos izquierdos */
-  .brand-link{ display: inline-block; transform: translateX(-55px); transition: transform .25s ease; }
-  .header__container.is-search-open .brand-link{ transform: translateX(5px); }
+  .header__left .label {
+    display: none !important;
+  }
+
+  .logoSwap {
+    --logo-h: 80px;
+  }
+
+  .header__center {
+    position: static;
+    transform: none;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  /* Agregá esto para mover el logo a la izquierda */
+  .brand-link {
+    transform: translateX(-90px); /* valor ajustable */
+  }
+
+  .header__container.is-search-open .brand-link {
+    transform: translateX(-30px);
+  }
 }
